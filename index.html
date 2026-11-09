@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ôn Tập Giữa Học Kỳ I - Môn Công Nghệ 8 (2026-2027)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      line-height: 1.5;
+    }
+    .math {
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      font-size: 1.08em;
+    }
+    .math-num {
+      font-family: 'Times New Roman', Times, serif;
+      font-style: normal;
+      font-size: 1.06em;
+    }
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 0.95em;
+      line-height: 1.1;
+    }
+    .frac-num {
+      border-bottom: 1.2px solid currentColor;
+      padding: 0 3px 1px;
+    }
+    .frac-den {
+      padding: 1px 3px 0;
+    }
+    .option-btn {
+      transition: all 0.15s ease-in-out;
+      cursor: pointer;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+          CN8
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+            Ôn Tập Giữa Học Kỳ I - Môn Công Nghệ 8
+          </h1>
+          <p class="text-xs text-slate-500">
+            Năm học 2026–2027 • 16 câu Trắc nghiệm, 8 câu Đúng/Sai &amp; 7 câu Tự luận
+          </p>
+        </div>
+      </div>
+
+      <!-- Timer + Reset -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-700">
+          <span>⏱️</span>
+          <span id="timerDisplay">00:00</span>
+        </div>
+
+        <button type="button" onclick="resetAndStart()" class="inline-flex items-center gap-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg transition cursor-pointer">
+          <span>🔄 Làm lại</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- Left Sidebar: Controls & Navigator -->
+    <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+
+      <!-- Settings Box -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="font-bold text-slate-800 text-sm sm:text-base">
+            ⚙️ Tùy chọn chế độ ôn tập
+          </h2>
+          <span id="shuffleBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+            Đề gốc
+          </span>
+        </div>
+
+        <!-- Chức năng 1: Giữ đề gốc / Đảo đề -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+            1. Thứ tự câu hỏi &amp; đáp án
+          </label>
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+            <button type="button" id="btnOrderOriginal" onclick="setOrderMode(false)" class="py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-teal-700 shadow-sm cursor-pointer">
+              <span>📋 Giữ đề gốc</span>
+            </button>
+            <button type="button" id="btnOrderShuffle" onclick="setOrderMode(true)" class="py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer">
+              <span>🔀 Đảo đề</span>
+            </button>
+          </div>
+          <p id="orderHelperText" class="text-xs text-slate-500 leading-relaxed">
+            Giữ nguyên thứ tự câu hỏi và vị trí A, B, C, D đúng như trong tờ đề cương.
+          </p>
+        </div>
+
+        <!-- Chức năng 2: Chấm ngay / Nộp bài mới chấm -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+            2. Chế độ hiển thị kết quả
+          </label>
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+            <button type="button" id="btnModePractice" onclick="setQuizMode('practice')" class="py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-teal-700 shadow-sm cursor-pointer">
+              <span>⚡ Chấm ngay</span>
+            </button>
+            <button type="button" id="btnModeExam" onclick="setQuizMode('exam')" class="py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer">
+              <span>📝 Nộp bài mới chấm</span>
+            </button>
+          </div>
+          <p id="modeHelperText" class="text-xs text-slate-500 leading-relaxed">
+            <strong>Chế độ Luyện tập:</strong> Chọn đáp án nào sẽ báo Đúng/Sai và hiện giải thích ngay lập tức.
+          </p>
+        </div>
+
+        <!-- Bộ lọc Phần -->
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+            Phần muốn hiển thị
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+            <button type="button" id="filterAll" onclick="setSectionFilter('all')" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200 cursor-pointer">
+              Tất cả
+            </button>
+            <button type="button" id="filterPart1" onclick="setSectionFilter('part1')" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              Phần I
+            </button>
+            <button type="button" id="filterPart2" onclick="setSectionFilter('part2')" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              Phần II
+            </button>
+            <button type="button" id="filterPart3" onclick="setSectionFilter('part3')" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">
+              Tự luận
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress & Question Map -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800 text-sm sm:text-base">Tiến độ &amp; Bảng câu hỏi</h3>
+          <span id="progressCountText" class="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">
+            Đã làm: 0/24
+          </span>
+        </div>
+
+        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+          <div id="progressBar" class="bg-teal-600 h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <!-- Score Summary -->
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <div class="text-xs text-slate-500">Điểm TN</div>
+            <div id="scorePointText" class="text-lg font-extrabold text-teal-600">0.0</div>
+          </div>
+          <div class="border-x border-slate-200">
+            <div class="text-xs text-slate-500">Phần I (ABCD)</div>
+            <div id="scorePart1Text" class="text-lg font-bold text-emerald-600">0/16</div>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500">Ý Đúng/Sai II</div>
+            <div id="scorePart2Text" class="text-lg font-bold text-emerald-600">0/32</div>
+          </div>
+        </div>
+
+        <!-- Navigator Grids -->
+        <div class="space-y-3">
+          <div>
+            <div id="navLabelPart1" class="text-xs font-semibold text-slate-500 mb-1.5">Phần I: Trắc nghiệm (16 câu)</div>
+            <div id="navGridPart1" class="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-4 gap-1.5"></div>
+          </div>
+          <div>
+            <div id="navLabelPart2" class="text-xs font-semibold text-slate-500 mb-1.5">Phần II: Đúng / Sai (8 câu)</div>
+            <div id="navGridPart2" class="grid grid-cols-4 gap-1.5"></div>
+          </div>
+          <div id="navBlockPart3">
+            <div class="text-xs font-semibold text-slate-500 mb-1.5">Phần III: Tự luận (7 câu)</div>
+            <div id="navGridPart3" class="grid grid-cols-4 gap-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Submit & Retry Buttons -->
+        <div class="pt-2 space-y-2">
+          <button type="button" onclick="submitExam()" class="w-full py-3 px-4 rounded-xl font-bold text-sm text-white bg-teal-600 hover:bg-teal-700 shadow-sm transition cursor-pointer">
+            <span id="btnSubmitText">✅ Nộp bài &amp; Xem kết quả</span>
+          </button>
+
+          <button type="button" id="btnRetryWrong" onclick="retryWrongOnly()" class="hidden w-full py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm text-amber-800 bg-amber-100 hover:bg-amber-200 transition cursor-pointer">
+            ⚠️ Luyện lại các câu làm sai
+          </button>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Right Main Area: Question Cards -->
+    <section class="lg:col-span-8 space-y-8">
+
+      <!-- Result Banner -->
+      <div id="resultBanner" class="hidden bg-gradient-to-r from-teal-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="inline-block text-xs font-bold uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-full">
+              Kết quả bài làm
+            </span>
+            <h2 id="resultBannerTitle" class="text-2xl font-extrabold">Hoàn thành bài ôn tập!</h2>
+            <p id="resultBannerDesc" class="text-sm text-teal-50">
+              Bạn có thể xem chi tiết đáp án đúng và lời giải ở từng câu bên dưới.
+            </p>
+          </div>
+          <div class="bg-white/15 rounded-2xl px-5 py-3 text-center shrink-0 border border-white/20">
+            <div class="text-xs uppercase tracking-wider text-teal-100">Điểm Trắc Nghiệm (Thang 10)</div>
+            <div id="resultBannerScore" class="text-3xl font-black">10.0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHẦN I -->
+      <div id="part1Section" class="space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+          <span id="part1HeaderBadge" class="text-xs font-bold uppercase tracking-wider text-teal-600">Phần I (16 câu)</span>
+          <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">
+            Câu trắc nghiệm nhiều phương án lựa chọn
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Mỗi câu hỏi chỉ chọn một phương án đúng nhất trong bốn phương án A, B, C, D.
+          </p>
+        </div>
+
+        <div id="part1QuestionsList" class="space-y-4"></div>
+      </div>
+
+      <!-- PHẦN II -->
+      <div id="part2Section" class="space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+          <span id="part2HeaderBadge" class="text-xs font-bold uppercase tracking-wider text-teal-600">Phần II (8 câu - 32 ý)</span>
+          <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">
+            Câu trắc nghiệm Đúng / Sai
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Trong mỗi ý <strong>a), b), c), d)</strong> ở mỗi câu, học sinh chọn <strong>Đúng (Đ)</strong> hoặc <strong>Sai (S)</strong>.
+          </p>
+        </div>
+
+        <div id="part2QuestionsList" class="space-y-4"></div>
+      </div>
+
+      <!-- PHẦN III -->
+      <div id="part3Section" class="space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-600">Phần III (7 câu Tự luận &amp; Bài tập)</span>
+            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">
+              Phần Tự Luận, Vẽ Hình Chiếu &amp; Tính Tỉ Số Truyền
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Bạn có thể tự nhập kết quả tính toán để kiểm tra nhanh hoặc bấm nút xem lời giải &amp; hình vẽ mẫu.
+            </p>
+          </div>
+          <button type="button" onclick="toggleAllEssays(true)" class="text-xs font-semibold px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 transition cursor-pointer">
+            👁️ Mở tất cả lời giải Tự luận
+          </button>
+        </div>
+
+        <div id="part3QuestionsList" class="space-y-4"></div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="text-sm font-bold text-slate-800">Đã đến cuối đề ôn tập Công Nghệ 8</div>
+          <div class="text-xs text-slate-500">Kiểm tra kỹ các câu trước khi bấm Nộp bài nhé!</div>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+            Lên đầu trang ↑
+          </button>
+          <button type="button" onclick="submitExam()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 hover:bg-teal-700 text-white shadow-sm transition cursor-pointer">
+            Nộp bài &amp; Chấm điểm
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    // =========================================================================
+    // HÌNH VẼ KỸ THUẬT CHO CÂU 3 TỰ LUẬN CÔNG NGHỆ 8
+    // =========================================================================
+    var SVG_DIAGRAMS = {
+      tech_q3_problem:
+        '<svg viewBox="0 0 600 230" class="w-full max-w-[560px] mx-auto my-2 select-none">' +
+          '<text x="145" y="18" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Hình 1: Khối chữ L (kích thước mm)</text>' +
+          '<polygon points="90,55 130,55 130,135 190,135 190,175 90,175" fill="#e2e8f0" stroke="#0f172a" stroke-width="2"/>' +
+          '<polygon points="70,38 110,38 130,55 90,55" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8"/>' +
+          '<polygon points="70,38 90,55 90,175 70,158" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.8"/>' +
+          '<polygon points="130,118 170,118 190,135 130,135" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8"/>' +
+          '<line x1="70" y1="26" x2="110" y2="26" stroke="#475569" stroke-width="1.2"/>' +
+          '<text x="90" y="22" font-size="11" font-weight="600" fill="#0f172a" text-anchor="middle">20</text>' +
+          '<line x1="52" y1="38" x2="52" y2="158" stroke="#475569" stroke-width="1.2"/>' +
+          '<text x="40" y="102" font-size="11" font-weight="600" fill="#0f172a" text-anchor="middle">50</text>' +
+          '<line x1="90" y1="195" x2="190" y2="195" stroke="#475569" stroke-width="1.2"/>' +
+          '<text x="140" y="210" font-size="11" font-weight="600" fill="#0f172a" text-anchor="middle">50</text>' +
+          '<line x1="204" y1="135" x2="204" y2="175" stroke="#475569" stroke-width="1.2"/>' +
+          '<text x="218" y="160" font-size="11" font-weight="600" fill="#0f172a" text-anchor="middle">20</text>' +
+          '<text x="73" y="182" font-size="11" font-weight="600" fill="#0f172a">20</text>' +
+          '<line x1="175" y1="100" x2="215" y2="100" stroke="#0f172a" stroke-width="3"/>' +
+          '<polygon points="215,94 227,100 215,106" fill="#0f172a"/>' +
+          '<text x="435" y="18" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Hình 2: Khối hộp có rãnh chữ U</text>' +
+          '<polygon points="350,70 400,70 400,120 440,120 440,70 490,70 490,165 350,165" fill="#e2e8f0" stroke="#0f172a" stroke-width="2"/>' +
+          '<polygon points="350,70 370,54 420,54 400,70" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8"/>' +
+          '<polygon points="440,70 460,54 510,54 490,70" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8"/>' +
+          '<polygon points="490,70 510,54 510,149 490,165" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.8"/>' +
+          '<polygon points="400,120 420,104 440,104 440,120" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.6"/>' +
+          '<line x1="420" y1="54" x2="420" y2="104" stroke="#0f172a" stroke-width="1.6"/>' +
+          '<line x1="420" y1="205" x2="420" y2="174" stroke="#0f172a" stroke-width="3"/>' +
+          '<polygon points="414,176 420,166 426,176" fill="#0f172a"/>' +
+          '<text x="420" y="220" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Hướng chiếu từ trước</text>' +
+        '</svg>',
+
+      tech_q3_solution:
+        '<svg viewBox="0 0 620 215" class="w-full max-w-[580px] mx-auto my-2 select-none bg-white rounded-xl border border-slate-200 p-2">' +
+          '<text x="145" y="20" font-size="12" font-weight="700" fill="#0f766e" text-anchor="middle">1. Hình chiếu Khối chữ L</text>' +
+          '<polygon points="40,45 80,45 80,105 140,105 140,145 40,145" fill="#f0fdfa" stroke="#0f172a" stroke-width="2.2"/>' +
+          '<text x="90" y="168" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Hình chiếu đứng</text>' +
+          '<text x="90" y="183" font-size="10" fill="#475569" text-anchor="middle">(Cao 50, rộng 50, nhánh 20)</text>' +
+          '<line x1="80" y1="45" x2="185" y2="45" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>' +
+          '<line x1="140" y1="105" x2="185" y2="105" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>' +
+          '<line x1="140" y1="145" x2="185" y2="145" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>' +
+          '<rect x="185" y="45" width="40" height="100" fill="#f0fdfa" stroke="#0f172a" stroke-width="2.2"/>' +
+          '<line x1="185" y1="105" x2="225" y2="105" stroke="#0f172a" stroke-width="2"/>' +
+          '<text x="205" y="168" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Hình chiếu cạnh</text>' +
+          '<text x="205" y="183" font-size="10" fill="#475569" text-anchor="middle">(Rộng 20, cao 50)</text>' +
+          '<line x1="300" y1="15" x2="300" y2="200" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4,4"/>' +
+          '<text x="455" y="20" font-size="12" font-weight="700" fill="#0f766e" text-anchor="middle">2. Hình chiếu Khối hộp rãnh chữ U</text>' +
+          '<polygon points="335,50 375,50 375,95 410,95 410,50 450,50 450,145 335,145" fill="#f0fdfa" stroke="#0f172a" stroke-width="2.2"/>' +
+          '<text x="392" y="168" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Hình chiếu đứng</text>' +
+          '<text x="392" y="183" font-size="10" fill="#475569" text-anchor="middle">(Thấy rõ rãnh chữ U)</text>' +
+          '<line x1="450" y1="50" x2="500" y2="50" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>' +
+          '<line x1="410" y1="95" x2="500" y2="95" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>' +
+          '<line x1="450" y1="145" x2="500" y2="145" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>' +
+          '<rect x="500" y="50" width="55" height="95" fill="#f0fdfa" stroke="#0f172a" stroke-width="2.2"/>' +
+          '<line x1="500" y1="95" x2="555" y2="95" stroke="#e11d48" stroke-width="1.8" stroke-dasharray="5,4"/>' +
+          '<text x="527" y="168" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Hình chiếu cạnh</text>' +
+          '<text x="527" y="183" font-size="10" fill="#e11d48" text-anchor="middle">(Có nét đứt ngang đáy rãnh)</text>' +
+        '</svg>'
+    };
+
+    // =========================================================================
+    // PHẦN I: 16 CÂU TRẮC NGHIỆM NHIỀU LỰA CHỌN
+    // =========================================================================
+    var TECH8_PART1 = [
+      {
+        id: 'cn_p1_q1',
+        originalNum: 1,
+        question: 'Kích thước nào sau đây thuộc kích thước của khổ giấy A4 (tính bằng đơn vị mm)?',
+        options: [
+          { id: 'A', text: '594 * 811', isCorrect: false },
+          { id: 'B', text: '594 * 420', isCorrect: false },
+          { id: 'C', text: '297 * 420', isCorrect: false },
+          { id: 'D', text: '297 * 210', isCorrect: true }
+        ],
+        explanation: 'Theo tiêu chuẩn bản vẽ kỹ thuật, khổ giấy A4 có kích thước là <strong>297 &times; 210 mm</strong>.'
+      },
+      {
+        id: 'cn_p1_q2',
+        originalNum: 2,
+        question: 'Đâu là tỉ lệ thu nhỏ của bản vẽ kỹ thuật?',
+        options: [
+          { id: 'A', text: '2 : 1', isCorrect: false },
+          { id: 'B', text: '1 : 1', isCorrect: false },
+          { id: 'C', text: '1 : 2', isCorrect: true },
+          { id: 'D', text: '5 : 1', isCorrect: false }
+        ],
+        explanation: 'Tỉ lệ thu nhỏ có dạng <strong>1 : n</strong> (với n &gt; 1), do đó <strong>1 : 2</strong> là tỉ lệ thu nhỏ.'
+      },
+      {
+        id: 'cn_p1_q3',
+        originalNum: 3,
+        question: 'Vị trí hình chiếu bằng sắp xếp như thế nào so với hình chiếu đứng?',
+        options: [
+          { id: 'A', text: 'Dưới', isCorrect: true },
+          { id: 'B', text: 'Trên', isCorrect: false },
+          { id: 'C', text: 'Bên trái', isCorrect: false },
+          { id: 'D', text: 'Bên phải', isCorrect: false }
+        ],
+        explanation: 'Trên bản vẽ hình chiếu vuông góc, <strong>hình chiếu bằng</strong> đặt ở ngay <strong>phía dưới</strong> hình chiếu đứng.'
+      },
+      {
+        id: 'cn_p1_q4',
+        originalNum: 4,
+        question: 'Hình chiếu bằng của hình nón có dạng:',
+        options: [
+          { id: 'A', text: 'Hình tam giác cân', isCorrect: false },
+          { id: 'B', text: 'Hình tròn', isCorrect: true },
+          { id: 'C', text: 'Hình vuông', isCorrect: false },
+          { id: 'D', text: 'Hình chữ nhật', isCorrect: false }
+        ],
+        explanation: 'Hình nón có hình chiếu đứng và hình chiếu cạnh là hình tam giác cân, còn <strong>hình chiếu bằng là hình tròn</strong>.'
+      },
+      {
+        id: 'cn_p1_q5',
+        originalNum: 5,
+        question: 'Trình tự đọc của bản vẽ chi tiết được sắp xếp theo:',
+        options: [
+          { id: 'A', text: 'Khung tên &rarr; Hình biểu diễn &rarr; Kích thước &rarr; Yêu cầu kỹ thuật', isCorrect: true },
+          { id: 'B', text: 'Khung tên &rarr; Kích thước &rarr; Yêu cầu kỹ thuật &rarr; Hình biểu diễn', isCorrect: false },
+          { id: 'C', text: 'Khung tên &rarr; Yêu cầu kỹ thuật &rarr; Hình biểu diễn &rarr; Kích thước', isCorrect: false },
+          { id: 'D', text: 'Hình biểu diễn &rarr; Kích thước &rarr; Yêu cầu kỹ thuật &rarr; Khung tên', isCorrect: false }
+        ],
+        explanation: 'Trình tự đọc bản vẽ chi tiết gồm 4 bước: <strong>Khung tên &rarr; Hình biểu diễn &rarr; Kích thước &rarr; Yêu cầu kỹ thuật</strong>.'
+      },
+      {
+        id: 'cn_p1_q6',
+        originalNum: 6,
+        question: 'Ý nghĩa của nội dung "Yêu cầu kỹ thuật" trên bản vẽ chi tiết là gì?',
+        options: [
+          { id: 'A', text: 'Cho biết tên gọi của chi tiết máy.', isCorrect: false },
+          { id: 'B', text: 'Nêu các chỉ dẫn về gia công, xử lý bề mặt, nhiệt luyện... khi chế tạo chi tiết.', isCorrect: true },
+          { id: 'C', text: 'Cho biết vật liệu làm nên toàn bộ bản vẽ nhà.', isCorrect: false },
+          { id: 'D', text: 'Liệt kê tên các công nhân tham gia vẽ.', isCorrect: false }
+        ],
+        explanation: 'Mục <strong>Yêu cầu kỹ thuật</strong> trên bản vẽ chi tiết nêu các chỉ dẫn về gia công, xử lý bề mặt, nhiệt luyện...'
+      },
+      {
+        id: 'cn_p1_q7',
+        originalNum: 7,
+        question: 'Trong bản vẽ lắp không có nội dung nào sau đây?',
+        options: [
+          { id: 'A', text: 'Bảng kê', isCorrect: false },
+          { id: 'B', text: 'Yêu cầu kỹ thuật', isCorrect: true },
+          { id: 'C', text: 'Kích thước', isCorrect: false },
+          { id: 'D', text: 'Hình biểu diễn', isCorrect: false }
+        ],
+        explanation: 'Bản vẽ lắp gồm Hình biểu diễn, Kích thước, Bảng kê và Khung tên; <strong>không có</strong> mục Yêu cầu kỹ thuật.'
+      },
+      {
+        id: 'cn_p1_q8',
+        originalNum: 8,
+        question: 'Bản vẽ lắp dùng để làm gì trong sản xuất và thiết kế?',
+        options: [
+          { id: 'A', text: 'Diễn tả hình dạng và cấu tạo của một chi tiết duy nhất độc lập.', isCorrect: false },
+          { id: 'B', text: 'Diễn tả hình dạng, kết cấu của một cụm chi tiết hoặc sản phẩm gồm nhiều chi tiết lắp với nhau.', isCorrect: true },
+          { id: 'C', text: 'Dùng để thiết kế trang phục thời trang.', isCorrect: false },
+          { id: 'D', text: 'Dùng để vẽ bản đồ địa lý vùng miền.', isCorrect: false }
+        ],
+        explanation: '<strong>Bản vẽ lắp</strong> diễn tả hình dạng, kết cấu của một cụm chi tiết hoặc sản phẩm gồm nhiều chi tiết lắp với nhau.'
+      },
+      {
+        id: 'cn_p1_q9',
+        originalNum: 9,
+        question: 'Thành phần chủ yếu của kim loại đen là:',
+        options: [
+          { id: 'A', text: 'Nhôm và cácbon', isCorrect: false },
+          { id: 'B', text: 'Sắt và các bon', isCorrect: true },
+          { id: 'C', text: 'Kẽm và các bon', isCorrect: false },
+          { id: 'D', text: 'Thép và các bon', isCorrect: false }
+        ],
+        explanation: 'Thành phần chủ yếu của kim loại đen (gang và thép) là <strong>Sắt (Fe) và Cácbon (C)</strong>.'
+      },
+      {
+        id: 'cn_p1_q10',
+        originalNum: 10,
+        question: 'Trong thép tỉ lệ các bon thường chiếm bao nhiêu %?',
+        options: [
+          { id: 'A', text: 'Lớn hơn 2,24%', isCorrect: false },
+          { id: 'B', text: 'Lớn hơn 2,14%', isCorrect: false },
+          { id: 'C', text: 'Bé hơn 2.24%', isCorrect: false },
+          { id: 'D', text: 'Bé hơn 2,14%', isCorrect: true }
+        ],
+        explanation: 'Trong hợp kim sắt – cácbon, nếu tỉ lệ cácbon <strong>&le; 2,14% là thép</strong> (còn &gt; 2,14% là gang).'
+      },
+      {
+        id: 'cn_p1_q11',
+        originalNum: 11,
+        question: 'Bộ truyền động đai có cấu tạo gồm mấy bộ phận chính?',
+        options: [
+          { id: 'A', text: '1', isCorrect: false },
+          { id: 'B', text: '2', isCorrect: false },
+          { id: 'C', text: '3', isCorrect: true },
+          { id: 'D', text: '4', isCorrect: false }
+        ],
+        explanation: 'Bộ truyền động đai gồm <strong>3 bộ phận chính</strong>: bánh dẫn, bánh bị dẫn và dây đai.'
+      },
+      {
+        id: 'cn_p1_q12',
+        originalNum: 12,
+        question: 'Cơ cấu tay quay con trượt thuộc cơ cấu:',
+        options: [
+          { id: 'A', text: 'Biến chuyển động quay thành chuyển động tịnh tiến và ngược lại', isCorrect: true },
+          { id: 'B', text: 'Biến chuyển động quay thành chuyển động tịnh tiến', isCorrect: false },
+          { id: 'C', text: 'Biến chuyển động quay thành chuyển động lắc và ngược lại', isCorrect: false },
+          { id: 'D', text: 'Biến chuyển động lắc thành chuyển động tịnh tiến', isCorrect: false }
+        ],
+        explanation: 'Cơ cấu tay quay – con trượt biến đổi <strong>chuyển động quay thành chuyển động tịnh tiến và ngược lại</strong>.'
+      },
+      {
+        id: 'cn_p1_q13',
+        originalNum: 13,
+        question: 'Trong bản vẽ lắp không có nội dung nào sau đây? (Câu 13 trong đề cương)',
+        options: [
+          { id: 'A', text: 'Bảng kê', isCorrect: false },
+          { id: 'B', text: 'Yêu cầu kỹ thuật', isCorrect: true },
+          { id: 'C', text: 'Kích thước', isCorrect: false },
+          { id: 'D', text: 'Hình biểu diễn', isCorrect: false }
+        ],
+        explanation: 'Trong bản vẽ lắp không có nội dung <strong>Yêu cầu kỹ thuật</strong>.'
+      },
+      {
+        id: 'cn_p1_q14',
+        originalNum: 14,
+        question: 'Bản vẽ lắp dùng để làm gì trong sản xuất và thiết kế? (Câu 14 trong đề cương)',
+        options: [
+          { id: 'A', text: 'Diễn tả hình dạng và cấu tạo của một chi tiết duy nhất độc lập.', isCorrect: false },
+          { id: 'B', text: 'Diễn tả hình dạng, kết cấu của một cụm chi tiết hoặc sản phẩm gồm nhiều chi tiết lắp với nhau.', isCorrect: true },
+          { id: 'C', text: 'Dùng để thiết kế trang phục thời trang.', isCorrect: false },
+          { id: 'D', text: 'Dùng để vẽ bản đồ địa lý vùng miền.', isCorrect: false }
+        ],
+        explanation: 'Bản vẽ lắp diễn tả hình dạng, kết cấu của một cụm chi tiết hoặc sản phẩm gồm nhiều chi tiết lắp với nhau.'
+      },
+      {
+        id: 'cn_p1_q15',
+        originalNum: 15,
+        question: 'Thành phần chủ yếu của kim loại đen là: (Câu 15 trong đề cương)',
+        options: [
+          { id: 'A', text: 'Nhôm và cácbon', isCorrect: false },
+          { id: 'B', text: 'Sắt và các bon', isCorrect: true },
+          { id: 'C', text: 'Kẽm và các bon', isCorrect: false },
+          { id: 'D', text: 'Thép và các bon', isCorrect: false }
+        ],
+        explanation: 'Thành phần chủ yếu của kim loại đen là <strong>Sắt và các bon</strong>.'
+      },
+      {
+        id: 'cn_p1_q16',
+        originalNum: 16,
+        question: 'Vật liệu phi kim loại phổ biến trong cơ khí và đời sống có đặc điểm gì?',
+        options: [
+          { id: 'A', text: 'Dẫn điện rất mạnh.', isCorrect: false },
+          { id: 'B', text: 'Dễ bị gỉ sét khi để ngoài không khí ẩm.', isCorrect: false },
+          { id: 'C', text: 'Thường cách điện, cách nhiệt tốt, ít bị ăn mòn hóa học.', isCorrect: true },
+          { id: 'D', text: 'Có độ cứng và độ dẻo cao hơn tất cả các loại thép.', isCorrect: false }
+        ],
+        explanation: 'Vật liệu phi kim loại (gỗ, chất dẻo, cao su...) có đặc điểm <strong>thường cách điện, cách nhiệt tốt, ít bị ăn mòn hóa học</strong>.'
+      }
+    ];
+
+    // =========================================================================
+    // PHẦN II: 8 CÂU TRẮC NGHIỆM ĐÚNG / SAI (32 Ý)
+    // =========================================================================
+    var TECH8_PART2 = [
+      {
+        id: 'cn_p2_q1',
+        originalNum: 1,
+        stem: 'Phát biểu về tiêu chuẩn trình bày bản vẽ kỹ thuật và hình chiếu:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Nét liền đậm dùng để vẽ đường bao khuất, cạnh khuất của vật thể.',
+            correct: false,
+            explanation: 'Sai. Nét liền đậm dùng để vẽ đường bao thấy, cạnh thấy; đường bao khuất vẽ bằng nét đứt mảnh.'
+          },
+          {
+            id: 'b',
+            text: 'Khổ giấy A4 có diện tích nhỏ hơn khổ giấy A3.',
+            correct: true,
+            explanation: 'Đúng. Khổ giấy A3 có diện tích gấp đôi khổ giấy A4.'
+          },
+          {
+            id: 'c',
+            text: 'Vị trí hình chiếu cạnh nằm ở bên phải hình chiếu đứng.',
+            correct: true,
+            explanation: 'Đúng. Hình chiếu cạnh nằm bên phải hình chiếu đứng.'
+          },
+          {
+            id: 'd',
+            text: 'Tỉ lệ 2:1 là tỉ lệ phóng to, nghĩa là kích thước trên bản vẽ lớn hơn kích thước thực tế gấp đôi.',
+            correct: true,
+            explanation: 'Đúng. Tỉ lệ 2:1 là tỉ lệ phóng to gấp 2 lần.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q2',
+        originalNum: 2,
+        stem: 'Phát biểu về bản vẽ chi tiết và bản vẽ lắp:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Khung tên của bản vẽ chi tiết thường nằm ở góc phía trên bên trái của bản vẽ.',
+            correct: false,
+            explanation: 'Sai. Khung tên luôn đặt ở góc phía dưới bên phải bản vẽ.'
+          },
+          {
+            id: 'b',
+            text: 'Kích thước trên bản vẽ kỹ thuật (nếu không có chú thích khác) thường được tính bằng đơn vị milimét (mm).',
+            correct: true,
+            explanation: 'Đúng. Kích thước độ dài trên bản vẽ kỹ thuật tính bằng mm.'
+          },
+          {
+            id: 'c',
+            text: 'Bản vẽ lắp chỉ dùng để vẽ riêng lẻ từng chiếc ốc vít mà không cần liên kết với bộ phận nào khác.',
+            correct: false,
+            explanation: 'Sai. Bản vẽ lắp diễn tả một cụm chi tiết/sản phẩm gồm nhiều chi tiết lắp với nhau.'
+          },
+          {
+            id: 'd',
+            text: 'Dựa vào bản vẽ lắp, người ta có thể biết được vị trí tương quan và cách lắp ráp giữa các chi tiết.',
+            correct: true,
+            explanation: 'Đúng.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q3',
+        originalNum: 3,
+        stem: 'Phát biểu về vật liệu cơ khí và cơ cấu truyền động:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Đồng và nhôm là những đại diện tiêu biểu của nhóm kim loại màu.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'b',
+            text: 'Gỗ, cao su, chất dẻo thuộc nhóm vật liệu phi kim loại có tính cách điện và chống ăn mòn tốt.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'c',
+            text: 'Nhựa nhiệt dẻo có đặc tính nổi bật là dẫn điện và dẫn nhiệt rất tốt giống như kim loại.',
+            correct: false,
+            explanation: 'Sai. Nhựa nhiệt dẻo là vật liệu phi kim loại nên cách điện, cách nhiệt.'
+          },
+          {
+            id: 'd',
+            text: 'Bộ truyền động đai hoạt động dựa vào lực ma sát giữa dây đai và bánh đai.',
+            correct: true,
+            explanation: 'Đúng.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q4',
+        originalNum: 4,
+        stem: 'Trong các phương án sau đâu là đáp án đúng, đâu là đáp án sai khi nói về biến đổi chuyển động, thì cơ cấu tay quay – con trượt thuộc cơ cấu:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Biến chuyển động quay thành chuyển động lắc.',
+            correct: false,
+            explanation: 'Sai. Đây là cơ cấu tay quay – thanh lắc.'
+          },
+          {
+            id: 'b',
+            text: 'Biến chuyển động tịnh tiến thành chuyển động quay.',
+            correct: true,
+            explanation: 'Đúng. Cơ cấu tay quay – con trượt có tính thuận nghịch.'
+          },
+          {
+            id: 'c',
+            text: 'Biến chuyển động quay thành chuyển động tịnh tiến.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'd',
+            text: 'Biến chuyển động lắc thành chuyển động quay.',
+            correct: false,
+            explanation: 'Sai.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q5',
+        originalNum: 5,
+        stem: 'Phát biểu về tiêu chuẩn trình bày bản vẽ kỹ thuật và hình chiếu vuông góc:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Nét liền đậm được sử dụng để biểu diễn các đường bao thấy và cạnh thấy của vật thể.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'b',
+            text: 'Tỉ lệ 1:10 là tỉ lệ phóng to, nghĩa là kích thước hình biểu diễn trên bản vẽ lớn gấp 10 lần kích thước thực tế của vật thể.',
+            correct: false,
+            explanation: 'Sai. Tỉ lệ 1:10 là tỉ lệ thu nhỏ 10 lần.'
+          },
+          {
+            id: 'c',
+            text: 'Khổ giấy A3 có kích thước lớn hơn khổ giấy A4 và nhỏ hơn khổ giấy A2.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'd',
+            text: 'Trong phương pháp chiếu góc vuông, hình chiếu cạnh được đặt ở bên dưới hình chiếu đứng.',
+            correct: false,
+            explanation: 'Sai. Hình chiếu cạnh đặt ở bên phải hình chiếu đứng; bên dưới là hình chiếu bằng.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q6',
+        originalNum: 6,
+        stem: 'Phát biểu về bản vẽ lắp và bản vẽ nhà:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Bản vẽ lắp biểu diễn hình dạng, kết cấu của một sản phẩm gồm nhiều chi tiết lắp ráp lại với nhau.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'b',
+            text: 'Bảng danh mục chi tiết là nội dung có ở bản vẽ lắp nhưng không có ở bản vẽ chi tiết.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'c',
+            text: 'Bản vẽ nhà chỉ gồm 2 hình biểu diễn chính là mặt bằng và mặt đứng, không cần đến mặt cắt.',
+            correct: false,
+            explanation: 'Sai. Bản vẽ nhà gồm 3 hình biểu diễn chính: mặt bằng, mặt đứng và mặt cắt.'
+          },
+          {
+            id: 'd',
+            text: 'Mặt bằng của bản vẽ nhà là hình cắt bằng diễn tả vị trí, kích thước các phòng, tường, cửa sổ, cửa đi... của tầng nhà.',
+            correct: true,
+            explanation: 'Đúng.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q7',
+        originalNum: 7,
+        stem: 'Phát biểu về vật liệu cơ khí và cơ cấu truyền động:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Thép và gang là những đại diện tiêu biểu của nhóm kim loại màu.',
+            correct: false,
+            explanation: 'Sai. Thép và gang thuộc nhóm kim loại đen.'
+          },
+          {
+            id: 'b',
+            text: 'Cao su thuộc nhóm vật liệu phi kim loại có tính đàn hồi cao và giảm chấn tốt.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'c',
+            text: 'Đồng, Nhôm có đặc tính nổi bật là dẫn điện và dẫn nhiệt rất tốt.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'd',
+            text: 'Bộ truyền động đai thường được dùng khi khoảng cách giữa các trục quay tương đối xa và truyền lực êm ái.',
+            correct: true,
+            explanation: 'Đúng.'
+          }
+        ]
+      },
+      {
+        id: 'cn_p2_q8',
+        originalNum: 8,
+        stem: '"Trong sản xuất và đời sống, các máy cơ khí thường sử dụng các cơ cấu biến đổi chuyển động để truyền và biến đổi dạng chuyển động từ bộ phận động lực đến bộ phận công tác." Xác định tính Đúng hoặc Sai của các nhận định dưới đây:',
+        statements: [
+          {
+            id: 'a',
+            text: 'Cơ cấu tay quay - con trượt để biến đổi chuyển động quay thành chuyển động tịnh tiến và ngược lại.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'b',
+            text: 'Cơ cấu tay quay - thanh lắc dùng để biến đổi chuyển động quay thành chuyển động lắc và ngược lại.',
+            correct: true,
+            explanation: 'Đúng.'
+          },
+          {
+            id: 'c',
+            text: 'Trong cơ cấu tay quay - con trượt, khi tay quay quay tròn quanh trục thì con trượt chuyển động lắc qua lại.',
+            correct: false,
+            explanation: 'Sai. Con trượt chuyển động tịnh tiến qua lại.'
+          },
+          {
+            id: 'd',
+            text: 'Ứng dụng của cơ cấu tay quay - con trượt có thể tìm thấy ở bộ phận bàn đạp của xe đạp.',
+            correct: false,
+            explanation: 'Sai. Bàn đạp – đĩa xích – líp của xe đạp là bộ truyền động ăn khớp (truyền động xích).'
+          }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // PHẦN III: 7 CÂU TỰ LUẬN & BÀI TẬP
+    // =========================================================================
+    var TECH8_PART3 = [
+      {
+        id: 'cn_p3_q1',
+        originalNum: 1,
+        question: 'Em hãy nêu tên các hình biểu diễn chính trên bản vẽ nhà. Ý nghĩa của bản vẽ mặt bằng ngôi nhà là gì?',
+        hint: 'Gợi ý: Nêu 3 hình biểu diễn chính trên bản vẽ nhà và giải thích ý nghĩa của mặt bằng.',
+        answerHtml:
+          '<ul class="list-disc pl-5 space-y-1.5">' +
+            '<li><strong>Các hình biểu diễn chính trên bản vẽ nhà gồm:</strong> Mặt bằng, Mặt đứng và Mặt cắt.</li>' +
+            '<li><strong>Ý nghĩa của bản vẽ mặt bằng ngôi nhà:</strong> Mặt bằng là hình cắt bằng của ngôi nhà (cắt bởi mặt phẳng nằm ngang đi qua cửa sổ). Đây là hình biểu diễn quan trọng nhất, diễn tả <strong>vị trí, kích thước các tường, vách ngăn, cửa đi, cửa sổ, cách bố trí các phòng, thiết bị, đồ đạc...</strong> trong một tầng nhà.</li>' +
+          '</ul>'
+      },
+      {
+        id: 'cn_p3_q2',
+        originalNum: 2,
+        question: 'Trình bày bản mô tả khi đọc bản vẽ chi tiết?',
+        hint: 'Gợi ý: Nêu trình tự 4 bước đọc bản vẽ chi tiết và nội dung cần đọc ở mỗi bước.',
+        answerHtml:
+          '<p class="mb-2 font-semibold">Trình tự đọc bản vẽ chi tiết gồm 4 bước:</p>' +
+          '<div class="overflow-x-auto">' +
+            '<table class="w-full text-xs sm:text-sm border-collapse border border-slate-300 bg-white">' +
+              '<thead><tr class="bg-slate-100"><th class="border border-slate-300 px-3 py-2 text-left">Trình tự đọc</th><th class="border border-slate-300 px-3 py-2 text-left">Nội dung cần đọc</th></tr></thead>' +
+              '<tbody>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">1. Khung tên</td><td class="border border-slate-300 px-3 py-2">Tên gọi chi tiết, vật liệu, tỉ lệ bản vẽ, kí hiệu bản vẽ, cơ sở thiết kế.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">2. Hình biểu diễn</td><td class="border border-slate-300 px-3 py-2">Tên gọi các hình chiếu, vị trí hình cắt, mặt cắt.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">3. Kích thước</td><td class="border border-slate-300 px-3 py-2">Kích thước chung của chi tiết và kích thước từng phần của chi tiết.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">4. Yêu cầu kỹ thuật</td><td class="border border-slate-300 px-3 py-2">Chỉ dẫn về gia công, xử lý bề mặt (làm tù cạnh, mạ kẽm...), nhiệt luyện.</td></tr>' +
+              '</tbody>' +
+            '</table>' +
+          '</div>'
+      },
+      {
+        id: 'cn_p3_q3',
+        originalNum: 3,
+        question: 'Cho vật thể A có dạng như sau: Hãy vẽ hình chiếu đứng và hình chiếu cạnh của vật thể dưới đây (hướng mũi tên là hướng chiếu từ trước ra sau).',
+        svg: SVG_DIAGRAMS.tech_q3_problem,
+        hint: 'Gợi ý: Vẽ Hình chiếu đứng theo hướng mũi tên chỉ, sau đó gióng sang phải để vẽ Hình chiếu cạnh.',
+        answerHtml:
+          '<div class="space-y-2">' +
+            '<p class="font-semibold">Bản vẽ Hình chiếu đứng và Hình chiếu cạnh của 2 vật thể:</p>' +
+            SVG_DIAGRAMS.tech_q3_solution +
+            '<ul class="list-disc pl-5 text-xs sm:text-sm space-y-1">' +
+              '<li><strong>Khối chữ L (bên trái):</strong> Hình chiếu đứng có dạng chữ L (cao 50, rộng 50, nhánh dày 20). Hình chiếu cạnh đặt bên phải là hình chữ nhật (rộng 20, cao 50) có 1 đường nét liền đậm nằm ngang ở độ cao 20.</li>' +
+              '<li><strong>Khối hộp có rãnh chữ U (bên phải):</strong> Hình chiếu đứng là hình chữ nhật có rãnh chữ U ở giữa phía trên. Hình chiếu cạnh đặt bên phải là hình chữ nhật có <strong>1 đường nét đứt mảnh nằm ngang</strong> biểu diễn mặt đáy khuất của rãnh chữ U.</li>' +
+            '</ul>' +
+          '</div>'
+      },
+      {
+        id: 'cn_p3_q4',
+        originalNum: 4,
+        question: 'Đĩa xích của một xe đạp có 40 răng, đĩa líp có 20 răng. Tính tỉ số truyền và cho biết chi tiết nào quay nhanh hơn?',
+        checkCalc: {
+          label: 'Nhập tỉ số truyền i (ví dụ: 2 hoặc 0.5):',
+          acceptedValues: ['2', '0.5', '0,5', '1/2']
+        },
+        answerHtml:
+          '<ul class="list-disc pl-5 space-y-1">' +
+            '<li><strong>Tóm tắt:</strong> Đĩa xích <span class="math">Z<sub>1</sub> = 40</span> răng; Đĩa líp <span class="math">Z<sub>2</sub> = 20</span> răng.</li>' +
+            '<li><strong>Tỉ số truyền i:</strong> <span class="math">i = n<sub>2</sub> / n<sub>1</sub> = Z<sub>1</sub> / Z<sub>2</sub> = 40 / 20 = </span><strong>2</strong> (hoặc nếu tính theo <span class="math">i = n<sub>1</sub> / n<sub>2</sub> = Z<sub>2</sub> / Z<sub>1</sub> = 20 / 40 = 0,5</span>).</li>' +
+            '<li><strong>Kết luận:</strong> Vì số răng đĩa líp ít hơn đĩa xích 2 lần nên <strong>đĩa líp quay nhanh hơn đĩa xích 2 lần</strong>.</li>' +
+          '</ul>'
+      },
+      {
+        id: 'cn_p3_q5',
+        originalNum: 5,
+        question: 'Trong bộ truyền động đai gồm một cặp bánh đai, bánh dẫn có đường kính là 150cm, bánh bị dẫn có đường kính là 50 cm. Khi bánh bị dẫn quay với tốc độ 780 vòng/phút, thì bánh dẫn quay với tốc độ bao nhiêu?',
+        checkCalc: {
+          label: 'Nhập tốc độ quay của bánh dẫn (vòng/phút):',
+          acceptedValues: ['260']
+        },
+        answerHtml:
+          '<ul class="list-disc pl-5 space-y-1">' +
+            '<li><strong>Tóm tắt:</strong> <span class="math">D<sub>1</sub> = 150</span> cm; <span class="math">D<sub>2</sub> = 50</span> cm; <span class="math">n<sub>2</sub> = 780</span> vòng/phút. Tính <span class="math">n<sub>1</sub> = ?</span></li>' +
+            '<li><strong>Bài giải:</strong> Ta có công thức tỉ số truyền: <span class="math">n<sub>2</sub> / n<sub>1</sub> = D<sub>1</sub> / D<sub>2</sub> &rArr; n<sub>1</sub> = (n<sub>2</sub> &middot; D<sub>2</sub>) / D<sub>1</sub> = (780 &middot; 50) / 150 = </span><strong>260 (vòng/phút)</strong>.</li>' +
+            '<li><strong>Đáp số:</strong> Bánh dẫn quay với tốc độ <strong>260 vòng/phút</strong>.</li>' +
+          '</ul>'
+      },
+      {
+        id: 'cn_p3_q6',
+        originalNum: 6,
+        question: 'Trình bày bản mô tả khi đọc bản vẽ lắp?',
+        hint: 'Gợi ý: Trình tự đọc bản vẽ lắp gồm 5 bước: Khung tên -> Bảng kê -> Hình biểu diễn -> Kích thước -> Phân tích chi tiết & Tổng hợp.',
+        answerHtml:
+          '<p class="mb-2 font-semibold">Trình tự đọc bản vẽ lắp gồm 5 bước:</p>' +
+          '<div class="overflow-x-auto">' +
+            '<table class="w-full text-xs sm:text-sm border-collapse border border-slate-300 bg-white">' +
+              '<thead><tr class="bg-slate-100"><th class="border border-slate-300 px-3 py-2 text-left">Trình tự đọc</th><th class="border border-slate-300 px-3 py-2 text-left">Nội dung cần đọc</th></tr></thead>' +
+              '<tbody>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">1. Khung tên</td><td class="border border-slate-300 px-3 py-2">Tên gọi sản phẩm, tỉ lệ bản vẽ, kí hiệu bản vẽ, cơ sở thiết kế.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">2. Bảng kê</td><td class="border border-slate-300 px-3 py-2">Số thứ tự, tên gọi chi tiết, số lượng và vật liệu chế tạo từng chi tiết.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">3. Hình biểu diễn</td><td class="border border-slate-300 px-3 py-2">Tên gọi các hình chiếu, hình cắt, mặt cắt.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">4. Kích thước</td><td class="border border-slate-300 px-3 py-2">Kích thước chung, kích thước lắp ráp giữa các chi tiết, kích thước xác định khoảng cách.</td></tr>' +
+                '<tr><td class="border border-slate-300 px-3 py-2 font-bold">5. Phân tích chi tiết &amp; Tổng hợp</td><td class="border border-slate-300 px-3 py-2">Vị trí các chi tiết, phương pháp lắp ghép, trình tự tháo/lắp và công dụng của sản phẩm.</td></tr>' +
+              '</tbody>' +
+            '</table>' +
+          '</div>'
+      },
+      {
+        id: 'cn_p3_q7',
+        originalNum: 7,
+        question: 'Đĩa xích của một xe đạp có 90 răng, đĩa líp có 30 răng. Tính tỉ số truyền và cho biết chi tiết nào quay nhanh hơn?',
+        checkCalc: {
+          label: 'Nhập tỉ số truyền i (ví dụ: 3 hoặc 1/3):',
+          acceptedValues: ['3', '1/3', '0.33', '0,33']
+        },
+        answerHtml:
+          '<ul class="list-disc pl-5 space-y-1">' +
+            '<li><strong>Tóm tắt:</strong> Đĩa xích <span class="math">Z<sub>1</sub> = 90</span> răng; Đĩa líp <span class="math">Z<sub>2</sub> = 30</span> răng.</li>' +
+            '<li><strong>Tỉ số truyền i:</strong> <span class="math">i = n<sub>2</sub> / n<sub>1</sub> = Z<sub>1</sub> / Z<sub>2</sub> = 90 / 30 = </span><strong>3</strong> (hoặc theo <span class="math">i = n<sub>1</sub> / n<sub>2</sub> = Z<sub>2</sub> / Z<sub>1</sub> = 30 / 90 = 1/3</span>).</li>' +
+            '<li><strong>Kết luận:</strong> Vì số răng đĩa líp ít hơn đĩa xích 3 lần nên <strong>đĩa líp quay nhanh hơn đĩa xích 3 lần</strong>.</li>' +
+          '</ul>'
+      }
+    ];
+
+    // =========================================================================
+    // TRẠNG THÁI ỨNG DỤNG
+    // =========================================================================
+    var isShuffleMode = false;
+    var quizMode = 'practice';
+    var sectionFilter = 'all';
+    var isSubmitted = false;
+
+    var activePart1 = [];
+    var activePart2 = [];
+    var activePart3 = [];
+
+    var userAnswersP1 = {};
+    var userAnswersP2 = {};
+    var userAnswersP3 = {};
+
+    var secondsElapsed = 0;
+    var timerInterval = null;
+
+    function shuffleArray(arr) {
+      var copy = arr.slice();
+      for (var i = copy.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = copy[i];
+        copy[i] = copy[j];
+        copy[j] = temp;
+      }
+      return copy;
+    }
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      secondsElapsed = 0;
+      updateTimerUI();
+      timerInterval = setInterval(function () {
+        if (!isSubmitted) {
+          secondsElapsed++;
+          updateTimerUI();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      var mins = String(Math.floor(secondsElapsed / 60));
+      var secs = String(secondsElapsed % 60);
+      if (mins.length < 2) mins = '0' + mins;
+      if (secs.length < 2) secs = '0' + secs;
+      var el = document.getElementById('timerDisplay');
+      if (el) el.textContent = mins + ':' + secs;
+    }
+
+    function buildQuestionSet(onlyWrongIds) {
+      var p1 = TECH8_PART1.map(function (q) {
+        return {
+          id: q.id,
+          originalNum: q.originalNum,
+          question: q.question,
+          explanation: q.explanation,
+          svg: q.svg || null,
+          options: q.options.map(function (opt) {
+            return { id: opt.id, text: opt.text, isCorrect: opt.isCorrect };
+          })
+        };
+      });
+
+      var p2 = TECH8_PART2.map(function (q) {
+        return {
+          id: q.id,
+          originalNum: q.originalNum,
+          stem: q.stem,
+          statements: q.statements.map(function (st) {
+            return { id: st.id, text: st.text, correct: st.correct, explanation: st.explanation };
+          })
+        };
+      });
+
+      var p3 = TECH8_PART3.map(function (q) {
+        return {
+          id: q.id,
+          originalNum: q.originalNum,
+          question: q.question,
+          svg: q.svg || null,
+          hint: q.hint || null,
+          checkCalc: q.checkCalc || null,
+          answerHtml: q.answerHtml
+        };
+      });
+
+      if (onlyWrongIds) {
+        p1 = p1.filter(function (q) { return onlyWrongIds.p1.indexOf(q.id) !== -1; });
+        p2 = p2.filter(function (q) { return onlyWrongIds.p2.indexOf(q.id) !== -1; });
+      }
+
+      if (isShuffleMode) {
+        p1 = shuffleArray(p1).map(function (q) {
+          q.options = shuffleArray(q.options);
+          return q;
+        });
+        p2 = shuffleArray(p2).map(function (q) {
+          q.statements = shuffleArray(q.statements);
+          return q;
+        });
+        p3 = shuffleArray(p3);
+      }
+
+      activePart1 = p1;
+      activePart2 = p2;
+      activePart3 = p3;
+    }
+
+    function resetAndStart(onlyWrongIds) {
+      isSubmitted = false;
+      userAnswersP1 = {};
+      userAnswersP2 = {};
+      userAnswersP3 = {};
+
+      var banner = document.getElementById('resultBanner');
+      var retryBtn = document.getElementById('btnRetryWrong');
+      if (banner) banner.classList.add('hidden');
+      if (retryBtn) retryBtn.classList.add('hidden');
+
+      buildQuestionSet(onlyWrongIds || null);
+      renderAll();
+      startTimer();
+    }
+
+    function setOrderMode(shuffle) {
+      isShuffleMode = shuffle;
+      var btnOrig = document.getElementById('btnOrderOriginal');
+      var btnShuf = document.getElementById('btnOrderShuffle');
+      var badge = document.getElementById('shuffleBadge');
+      var helper = document.getElementById('orderHelperText');
+
+      if (!shuffle) {
+        btnOrig.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-teal-700 shadow-sm cursor-pointer';
+        btnShuf.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        badge.textContent = 'Đề gốc';
+        badge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700';
+        helper.innerHTML = 'Giữ nguyên thứ tự câu hỏi và vị trí A, B, C, D đúng như trong tờ đề cương.';
+      } else {
+        btnShuf.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-teal-700 shadow-sm cursor-pointer';
+        btnOrig.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        badge.textContent = 'Đã đảo đề';
+        badge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800';
+        helper.innerHTML = 'Đã xáo trộn ngẫu nhiên thứ tự câu hỏi và các phương án trả lời A, B, C, D.';
+      }
+      resetAndStart();
+    }
+
+    function setQuizMode(mode) {
+      quizMode = mode;
+      var btnPrac = document.getElementById('btnModePractice');
+      var btnExam = document.getElementById('btnModeExam');
+      var helper = document.getElementById('modeHelperText');
+
+      if (mode === 'practice') {
+        btnPrac.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-teal-700 shadow-sm cursor-pointer';
+        btnExam.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        helper.innerHTML = '<strong>Chế độ Luyện tập:</strong> Chọn đáp án nào sẽ báo Đúng/Sai và hiện giải thích ngay lập tức.';
+      } else {
+        btnExam.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-white text-teal-700 shadow-sm cursor-pointer';
+        btnPrac.className = 'py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        helper.innerHTML = '<strong>Chế độ Kiểm tra:</strong> Làm xong toàn bộ rồi nhấn <strong>Nộp bài</strong> hệ thống mới chấm điểm và hiện đáp án.';
+      }
+      renderAll();
+    }
+
+    function setSectionFilter(filter) {
+      sectionFilter = filter;
+      var map = {
+        all: document.getElementById('filterAll'),
+        part1: document.getElementById('filterPart1'),
+        part2: document.getElementById('filterPart2'),
+        part3: document.getElementById('filterPart3')
+      };
+      for (var k in map) {
+        if (!map[k]) continue;
+        if (k === filter) {
+          map[k].className = 'py-1.5 px-2 rounded-lg text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200 cursor-pointer';
+        } else {
+          map[k].className = 'py-1.5 px-2 rounded-lg text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer';
+        }
+      }
+      document.getElementById('part1Section').style.display = (filter === 'all' || filter === 'part1') ? 'block' : 'none';
+      document.getElementById('part2Section').style.display = (filter === 'all' || filter === 'part2') ? 'block' : 'none';
+      document.getElementById('part3Section').style.display = (filter === 'all' || filter === 'part3') ? 'block' : 'none';
+    }
+
+    function selectPart1Option(questionId, optionIndex) {
+      if (isSubmitted) return;
+      userAnswersP1[questionId] = optionIndex;
+      renderAll();
+    }
+
+    function selectPart2Statement(questionId, statementIdx, boolValue) {
+      if (isSubmitted) return;
+      if (!userAnswersP2[questionId]) userAnswersP2[questionId] = {};
+      userAnswersP2[questionId][statementIdx] = boolValue;
+      renderAll();
+    }
+
+    function toggleEssayAnswer(questionId) {
+      if (!userAnswersP3[questionId]) {
+        userAnswersP3[questionId] = { revealed: false, calcInput: '', calcChecked: false, selfDone: false };
+      }
+      userAnswersP3[questionId].revealed = !userAnswersP3[questionId].revealed;
+      userAnswersP3[questionId].selfDone = true;
+      renderAll();
+    }
+
+    function toggleAllEssays(openState) {
+      for (var i = 0; i < activePart3.length; i++) {
+        var qId = activePart3[i].id;
+        if (!userAnswersP3[qId]) {
+          userAnswersP3[qId] = { revealed: openState, calcInput: '', calcChecked: false, selfDone: openState };
+        } else {
+          userAnswersP3[qId].revealed = openState;
+          userAnswersP3[qId].selfDone = openState;
+        }
+      }
+      renderAll();
+    }
+
+    function saveEssayInput(questionId, value) {
+      if (!userAnswersP3[questionId]) {
+        userAnswersP3[questionId] = { revealed: false, calcInput: '', calcChecked: false, selfDone: false };
+      }
+      userAnswersP3[questionId].calcInput = value;
+    }
+
+    function checkEssayCalculation(questionId) {
+      var inputEl = document.getElementById('calc_input_' + questionId);
+      if (!inputEl) return;
+      var val = inputEl.value.trim();
+      if (!userAnswersP3[questionId]) {
+        userAnswersP3[questionId] = { revealed: false, calcInput: '', calcChecked: false, selfDone: false };
+      }
+      userAnswersP3[questionId].calcInput = val;
+      userAnswersP3[questionId].calcChecked = true;
+      userAnswersP3[questionId].selfDone = true;
+      if (quizMode === 'practice') {
+        userAnswersP3[questionId].revealed = true;
+      }
+      renderAll();
+    }
+
+    function scrollToQuestion(domId) {
+      var el = document.getElementById(domId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function calculateStats() {
+      var p1Answered = 0;
+      var p1Correct = 0;
+      var wrongP1Ids = [];
+
+      for (var i = 0; i < activePart1.length; i++) {
+        var q = activePart1[i];
+        var chosenIdx = userAnswersP1[q.id];
+        if (chosenIdx !== undefined) {
+          p1Answered++;
+          if (q.options[chosenIdx] && q.options[chosenIdx].isCorrect) {
+            p1Correct++;
+          } else {
+            wrongP1Ids.push(q.id);
+          }
+        } else {
+          wrongP1Ids.push(q.id);
+        }
+      }
+
+      var p2QuestionsCompleted = 0;
+      var p2SubAnswered = 0;
+      var p2SubCorrect = 0;
+      var wrongP2Ids = [];
+
+      for (var j = 0; j < activePart2.length; j++) {
+        var q2 = activePart2[j];
+        var ansObj = userAnswersP2[q2.id] || {};
+        var keys = Object.keys(ansObj);
+        if (keys.length === q2.statements.length) {
+          p2QuestionsCompleted++;
+        }
+        var allCorrectInThisQ = true;
+        for (var s = 0; s < q2.statements.length; s++) {
+          var st = q2.statements[s];
+          if (ansObj[s] !== undefined) {
+            p2SubAnswered++;
+            if (ansObj[s] === st.correct) {
+              p2SubCorrect++;
+            } else {
+              allCorrectInThisQ = false;
+            }
+          } else {
+            allCorrectInThisQ = false;
+          }
+        }
+        if (!allCorrectInThisQ) {
+          wrongP2Ids.push(q2.id);
+        }
+      }
+
+      var totalQuestions = activePart1.length + activePart2.length;
+      var completedQuestions = p1Answered + p2QuestionsCompleted;
+      var totalPossibleUnits = activePart1.length + activePart2.length * 4;
+      var earnedUnits = p1Correct + p2SubCorrect;
+      var tenScaleScore = totalPossibleUnits > 0 ? (earnedUnits / totalPossibleUnits) * 10 : 0;
+
+      return {
+        p1Answered: p1Answered,
+        p1Correct: p1Correct,
+        p2QuestionsCompleted: p2QuestionsCompleted,
+        p2SubAnswered: p2SubAnswered,
+        p2SubCorrect: p2SubCorrect,
+        totalQuestions: totalQuestions,
+        completedQuestions: completedQuestions,
+        tenScaleScore: tenScaleScore,
+        wrongP1Ids: wrongP1Ids,
+        wrongP2Ids: wrongP2Ids
+      };
+    }
+
+    function submitExam() {
+      isSubmitted = true;
+      toggleAllEssays(true);
+      renderAll();
+
+      var stats = calculateStats();
+      var banner = document.getElementById('resultBanner');
+      banner.classList.remove('hidden');
+
+      document.getElementById('resultBannerScore').textContent = stats.tenScaleScore.toFixed(2);
+      document.getElementById('resultBannerTitle').textContent =
+        stats.tenScaleScore >= 8.5 ? 'Xuất sắc! Bạn nắm kiến thức rất vững!' :
+        stats.tenScaleScore >= 6.5 ? 'Khá tốt! Hãy xem lại một vài câu sai nhé!' :
+        'Cố gắng lên! Hãy đọc kỹ lời giải bên dưới và làm lại nhé!';
+
+      document.getElementById('resultBannerDesc').textContent =
+        'Đúng ' + stats.p1Correct + '/' + activePart1.length + ' câu Phần I và ' +
+        stats.p2SubCorrect + '/' + (activePart2.length * 4) + ' ý Đúng/Sai ở Phần II.';
+
+      if (stats.wrongP1Ids.length > 0 || stats.wrongP2Ids.length > 0) {
+        document.getElementById('btnRetryWrong').classList.remove('hidden');
+      } else {
+        document.getElementById('btnRetryWrong').classList.add('hidden');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function retryWrongOnly() {
+      var stats = calculateStats();
+      if (stats.wrongP1Ids.length === 0 && stats.wrongP2Ids.length === 0) return;
+      resetAndStart({
+        p1: stats.wrongP1Ids,
+        p2: stats.wrongP2Ids
+      });
+    }
+
+    function renderAll() {
+      renderPart1();
+      renderPart2();
+      renderPart3();
+      renderSidebarAndProgress();
+    }
+
+    function renderPart1() {
+      var container = document.getElementById('part1QuestionsList');
+      if (activePart1.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-slate-500 text-sm">Không có câu hỏi nào ở Phần I.</div>';
+        return;
+      }
+
+      var labels = ['A', 'B', 'C', 'D'];
+      var html = '';
+
+      for (var qIndex = 0; qIndex < activePart1.length; qIndex++) {
+        var q = activePart1[qIndex];
+        var chosenIdx = userAnswersP1[q.id];
+        var hasAnswered = chosenIdx !== undefined;
+        var showFeedback = (quizMode === 'practice' && hasAnswered) || isSubmitted;
+        var isUserCorrect = hasAnswered && q.options[chosenIdx] && q.options[chosenIdx].isCorrect;
+
+        var cardBorderClass = 'border-slate-200';
+        var statusBadge = '';
+
+        if (showFeedback) {
+          if (isUserCorrect) {
+            cardBorderClass = 'border-emerald-300';
+            statusBadge = '<span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">✓ Chính xác</span>';
+          } else if (hasAnswered) {
+            cardBorderClass = 'border-rose-300';
+            statusBadge = '<span class="text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full">✕ Chưa đúng</span>';
+          } else {
+            cardBorderClass = 'border-amber-300';
+            statusBadge = '<span class="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">! Chưa chọn</span>';
+          }
+        } else if (hasAnswered) {
+          cardBorderClass = 'border-teal-300';
+          statusBadge = '<span class="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">Đã chọn ' + labels[chosenIdx] + '</span>';
+        }
+
+        var originTag = isShuffleMode ? ' <span class="text-xs font-normal text-slate-400">(Câu ' + q.originalNum + ' đề gốc)</span>' : '';
+
+        var optionsHtml = '';
+        for (var optIdx = 0; optIdx < q.options.length; optIdx++) {
+          var opt = q.options[optIdx];
+          var isSelected = chosenIdx === optIdx;
+          var labelLetter = labels[optIdx];
+
+          var btnStyle = 'bg-slate-50 hover:bg-teal-50/50 border-slate-200 text-slate-800';
+          var circleStyle = 'bg-white border-slate-300 text-slate-700';
+          var rightIcon = '';
+
+          if (showFeedback) {
+            if (opt.isCorrect) {
+              btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold';
+              circleStyle = 'bg-emerald-600 border-emerald-600 text-white';
+              rightIcon = '<span class="ml-auto text-emerald-600 font-bold text-xs shrink-0">Đúng ✓</span>';
+            } else if (isSelected && !opt.isCorrect) {
+              btnStyle = 'bg-rose-50 border-rose-400 text-rose-950';
+              circleStyle = 'bg-rose-600 border-rose-600 text-white';
+              rightIcon = '<span class="ml-auto text-rose-600 font-bold text-xs shrink-0">Sai ✕</span>';
+            } else {
+              btnStyle = 'bg-slate-50 border-slate-200 text-slate-400';
+              circleStyle = 'bg-slate-100 border-slate-200 text-slate-400';
+            }
+          } else if (isSelected) {
+            btnStyle = 'bg-teal-50 border-teal-600 text-teal-950 font-semibold';
+            circleStyle = 'bg-teal-600 border-teal-600 text-white';
+          }
+
+          optionsHtml +=
+            '<button type="button" onclick="selectPart1Option(\'' + q.id + '\', ' + optIdx + ')" ' +
+            (isSubmitted ? 'disabled ' : '') +
+            'class="option-btn w-full text-left p-3.5 rounded-xl border-2 flex items-center gap-3 ' + btnStyle + '">' +
+              '<span class="w-7 h-7 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 ' + circleStyle + '">' + labelLetter + '</span>' +
+              '<span class="text-sm sm:text-base leading-snug">' + opt.text + '</span>' +
+              rightIcon +
+            '</button>';
+        }
+
+        var explanationHtml = showFeedback
+          ? '<div class="mt-4 p-3.5 rounded-xl bg-teal-50/70 border border-teal-200 text-xs sm:text-sm text-slate-700">' +
+              '<strong class="text-teal-900">💡 Giải thích: </strong>' + q.explanation +
+            '</div>'
+          : '';
+
+        html +=
+          '<article id="card_' + q.id + '" class="bg-white rounded-2xl border ' + cardBorderClass + ' p-5 shadow-sm">' +
+            '<div class="flex items-start justify-between gap-3 mb-2">' +
+              '<div class="text-sm sm:text-base font-bold text-teal-700">Câu ' + (qIndex + 1) + originTag + ':</div>' +
+              statusBadge +
+            '</div>' +
+            '<div class="text-slate-900 text-sm sm:text-base font-medium leading-relaxed mb-4">' + q.question + '</div>' +
+            '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">' + optionsHtml + '</div>' +
+            explanationHtml +
+          '</article>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderPart2() {
+      var container = document.getElementById('part2QuestionsList');
+      if (activePart2.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-slate-500 text-sm">Không có câu hỏi nào ở Phần II.</div>';
+        return;
+      }
+
+      var subLabels = ['a', 'b', 'c', 'd'];
+      var html = '';
+
+      for (var qIndex = 0; qIndex < activePart2.length; qIndex++) {
+        var q = activePart2[qIndex];
+        var ansObj = userAnswersP2[q.id] || {};
+        var originTag = isShuffleMode ? ' <span class="text-xs font-normal text-slate-400">(Câu ' + q.originalNum + ' đề gốc)</span>' : '';
+
+        var statementsHtml = '';
+        for (var stIdx = 0; stIdx < q.statements.length; stIdx++) {
+          var st = q.statements[stIdx];
+          var userVal = ansObj[stIdx];
+          var hasChosen = userVal !== undefined;
+          var showFeedback = (quizMode === 'practice' && hasChosen) || isSubmitted;
+          var isSubCorrect = hasChosen && userVal === st.correct;
+
+          var rowBorder = 'border-slate-200 bg-slate-50/70';
+          if (showFeedback) {
+            rowBorder = isSubCorrect ? 'border-emerald-300 bg-emerald-50/40' : 'border-rose-300 bg-rose-50/40';
+          } else if (hasChosen) {
+            rowBorder = 'border-teal-200 bg-teal-50/30';
+          }
+
+          var btnTrueClass = 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100';
+          var btnFalseClass = 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100';
+
+          if (showFeedback) {
+            if (st.correct === true) {
+              btnTrueClass = 'border-emerald-600 bg-emerald-600 text-white font-bold';
+              if (userVal === false) btnFalseClass = 'border-rose-500 bg-rose-100 text-rose-800 font-bold line-through';
+            } else {
+              btnFalseClass = 'border-emerald-600 bg-emerald-600 text-white font-bold';
+              if (userVal === true) btnTrueClass = 'border-rose-500 bg-rose-100 text-rose-800 font-bold line-through';
+            }
+          } else {
+            if (userVal === true) btnTrueClass = 'border-teal-600 bg-teal-600 text-white font-bold';
+            if (userVal === false) btnFalseClass = 'border-teal-600 bg-teal-600 text-white font-bold';
+          }
+
+          var subExplanation = showFeedback
+            ? '<div class="mt-2 text-xs text-slate-700 bg-white rounded-lg px-3 py-2 border border-slate-200">' +
+                '<strong class="' + (isSubCorrect ? 'text-emerald-700' : 'text-rose-700') + '">' +
+                  (isSubCorrect ? '✓ Chính xác: ' : '✕ Đáp án đúng là ' + (st.correct ? 'Đúng (Đ)' : 'Sai (S)') + ': ') +
+                '</strong>' + st.explanation +
+              '</div>'
+            : '';
+
+          statementsHtml +=
+            '<div class="p-3.5 rounded-xl border ' + rowBorder + '">' +
+              '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">' +
+                '<div class="text-sm sm:text-base text-slate-800 leading-snug">' +
+                  '<strong class="text-teal-700 mr-1">' + subLabels[stIdx] + ')</strong>' + st.text +
+                '</div>' +
+                '<div class="flex items-center gap-2 shrink-0 self-end sm:self-center">' +
+                  '<button type="button" onclick="selectPart2Statement(\'' + q.id + '\', ' + stIdx + ', true)" ' +
+                    (isSubmitted ? 'disabled ' : '') +
+                    'class="px-3.5 py-1.5 rounded-lg border text-xs sm:text-sm cursor-pointer ' + btnTrueClass + '">Đúng (Đ)</button>' +
+                  '<button type="button" onclick="selectPart2Statement(\'' + q.id + '\', ' + stIdx + ', false)" ' +
+                    (isSubmitted ? 'disabled ' : '') +
+                    'class="px-3.5 py-1.5 rounded-lg border text-xs sm:text-sm cursor-pointer ' + btnFalseClass + '">Sai (S)</button>' +
+                '</div>' +
+              '</div>' +
+              subExplanation +
+            '</div>';
+        }
+
+        html +=
+          '<article id="card_' + q.id + '" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">' +
+            '<div class="flex items-center justify-between">' +
+              '<div class="text-sm sm:text-base font-bold text-teal-700">Câu ' + (qIndex + 1) + ' (Phần II)' + originTag + ':</div>' +
+              '<span class="text-xs text-slate-500">Chọn Đúng hoặc Sai</span>' +
+            '</div>' +
+            '<div class="text-slate-900 text-sm sm:text-base font-medium leading-relaxed">' + q.stem + '</div>' +
+            '<div class="space-y-2.5 pt-1">' + statementsHtml + '</div>' +
+          '</article>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderPart3() {
+      var container = document.getElementById('part3QuestionsList');
+      var html = '';
+
+      for (var qIndex = 0; qIndex < activePart3.length; qIndex++) {
+        var q = activePart3[qIndex];
+        var state = userAnswersP3[q.id] || { revealed: false, calcInput: '', calcChecked: false, selfDone: false };
+        var showAnswer = state.revealed || isSubmitted;
+        var originTag = isShuffleMode ? ' <span class="text-xs font-normal text-slate-400">(Câu ' + q.originalNum + ' đề gốc)</span>' : '';
+
+        var calcHtml = '';
+        if (q.checkCalc) {
+          var normalized = (state.calcInput || '').replace(/\s+/g, '');
+          var isCalcCorrect = state.calcChecked && q.checkCalc.acceptedValues.indexOf(normalized) !== -1;
+
+          calcHtml =
+            '<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">' +
+              '<label class="block text-xs font-bold text-slate-700">' + q.checkCalc.label + '</label>' +
+              '<div class="flex flex-wrap items-center gap-2">' +
+                '<input id="calc_input_' + q.id + '" type="text" value="' + (state.calcInput || '') + '" ' +
+                  'oninput="saveEssayInput(\'' + q.id + '\', this.value)" placeholder="Nhập kết quả..." ' +
+                  'class="px-3 py-2 rounded-lg border border-slate-300 text-sm w-48" />' +
+                '<button type="button" onclick="checkEssayCalculation(\'' + q.id + '\')" ' +
+                  'class="px-3.5 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold cursor-pointer">Kiểm tra đáp số</button>' +
+                (state.calcChecked
+                  ? (isCalcCorrect
+                      ? '<span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">✓ Đáp số chính xác!</span>'
+                      : '<span class="text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full">✕ Chưa khớp, xem lời giải bên dưới nhé!</span>')
+                  : '') +
+              '</div>' +
+            '</div>';
+        }
+
+        html +=
+          '<article id="card_' + q.id + '" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">' +
+            '<div class="flex items-center justify-between gap-2">' +
+              '<div class="text-sm sm:text-base font-bold text-teal-700">Câu ' + (qIndex + 1) + ' (Tự luận)' + originTag + ':</div>' +
+              '<button type="button" onclick="toggleEssayAnswer(\'' + q.id + '\')" ' +
+                'class="text-xs font-bold px-3 py-1.5 rounded-lg border cursor-pointer ' +
+                (showAnswer ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-teal-50 text-teal-700 border-teal-200') + '">' +
+                (showAnswer ? 'Ẩn lời giải mẫu' : '👁️ Xem đáp án & lời giải') +
+              '</button>' +
+            '</div>' +
+            '<div class="text-slate-900 text-sm sm:text-base font-medium leading-relaxed">' + q.question + '</div>' +
+            (q.svg ? '<div class="bg-slate-50 rounded-xl border border-slate-200 p-2">' + q.svg + '</div>' : '') +
+            (q.hint ? '<p class="text-xs text-slate-500 italic">' + q.hint + '</p>' : '') +
+            calcHtml +
+            (showAnswer
+              ? '<div class="mt-3 p-4 rounded-xl bg-teal-50/70 border border-teal-200 text-xs sm:text-sm text-slate-800 space-y-2">' +
+                  '<div class="font-bold text-teal-900">✅ Hướng dẫn giải chi tiết:</div>' +
+                  '<div>' + q.answerHtml + '</div>' +
+                '</div>'
+              : '') +
+          '</article>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderSidebarAndProgress() {
+      var stats = calculateStats();
+      var pct = stats.totalQuestions > 0 ? Math.round((stats.completedQuestions / stats.totalQuestions) * 100) : 0;
+
+      document.getElementById('progressCountText').textContent = 'Đã làm: ' + stats.completedQuestions + '/' + stats.totalQuestions;
+      document.getElementById('progressBar').style.width = pct + '%';
+
+      var showLiveScore = (quizMode === 'practice') || isSubmitted;
+      if (showLiveScore) {
+        document.getElementById('scorePointText').textContent = stats.tenScaleScore.toFixed(1);
+        document.getElementById('scorePart1Text').textContent = stats.p1Correct + '/' + activePart1.length;
+        document.getElementById('scorePart2Text').textContent = stats.p2SubCorrect + '/' + (activePart2.length * 4);
+      } else {
+        document.getElementById('scorePointText').textContent = '--';
+        document.getElementById('scorePart1Text').textContent = stats.p1Answered + '/' + activePart1.length;
+        document.getElementById('scorePart2Text').textContent = stats.p2SubAnswered + '/' + (activePart2.length * 4);
+      }
+
+      var navP1 = '';
+      for (var i = 0; i < activePart1.length; i++) {
+        var q = activePart1[i];
+        var chosenIdx = userAnswersP1[q.id];
+        var hasAnswered = chosenIdx !== undefined;
+        var showFeedback = (quizMode === 'practice' && hasAnswered) || isSubmitted;
+        var colorClass = 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+
+        if (showFeedback) {
+          colorClass = (hasAnswered && q.options[chosenIdx] && q.options[chosenIdx].isCorrect)
+            ? 'bg-emerald-500 text-white font-bold'
+            : 'bg-rose-500 text-white font-bold';
+        } else if (hasAnswered) {
+          colorClass = 'bg-teal-600 text-white font-bold';
+        }
+
+        navP1 += '<button type="button" onclick="scrollToQuestion(\'card_' + q.id + '\')" class="h-8 rounded-lg text-xs font-medium flex items-center justify-center cursor-pointer ' + colorClass + '">' + (i + 1) + '</button>';
+      }
+      document.getElementById('navGridPart1').innerHTML = navP1;
+
+      var navP2 = '';
+      for (var j = 0; j < activePart2.length; j++) {
+        var q2 = activePart2[j];
+        var ansObj = userAnswersP2[q2.id] || {};
+        var answeredCount = Object.keys(ansObj).length;
+        var allAnswered = answeredCount === q2.statements.length;
+        var showFeedback2 = (quizMode === 'practice' && answeredCount > 0) || isSubmitted;
+        var colorClass2 = 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+
+        if (showFeedback2) {
+          var allCorrect = allAnswered;
+          for (var s = 0; s < q2.statements.length; s++) {
+            if (ansObj[s] !== q2.statements[s].correct) allCorrect = false;
+          }
+          colorClass2 = allCorrect ? 'bg-emerald-500 text-white font-bold' : 'bg-rose-500 text-white font-bold';
+        } else if (answeredCount > 0) {
+          colorClass2 = allAnswered ? 'bg-teal-600 text-white font-bold' : 'bg-teal-100 text-teal-800 border border-teal-300 font-semibold';
+        }
+
+        navP2 += '<button type="button" onclick="scrollToQuestion(\'card_' + q2.id + '\')" class="h-8 rounded-lg text-xs font-medium flex items-center justify-center cursor-pointer ' + colorClass2 + '">II.' + (j + 1) + '</button>';
+      }
+      document.getElementById('navGridPart2').innerHTML = navP2;
+
+      var navP3 = '';
+      for (var k = 0; k < activePart3.length; k++) {
+        var q3 = activePart3[k];
+        var st = userAnswersP3[q3.id];
+        var done = st && (st.selfDone || st.revealed);
+        var colorClass3 = done ? 'bg-teal-600 text-white font-bold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+        navP3 += '<button type="button" onclick="scrollToQuestion(\'card_' + q3.id + '\')" class="h-8 rounded-lg text-xs font-medium flex items-center justify-center cursor-pointer ' + colorClass3 + '">TL.' + (k + 1) + '</button>';
+      }
+      document.getElementById('navGridPart3').innerHTML = navP3;
+    }
+
+    // Khởi chạy ngay lập tức
+    resetAndStart();
+  </script>
+</body>
+</html>
